@@ -22,13 +22,16 @@ k = 2 * np.pi / wavelength
 
 # Vectorized functions for pressure and net force
 def pressure(x, t, offset=0):
-    # Update to create a standing wave function
-    return amplitude * np.cos(k * x) * np.cos(angular_frequency * t + offset)
+    # Update to create a parabolic function for pressure that varies with time
+    A = amplitude / (wavelength / 2)**2  # Coefficient for x^2
+    B = 0  # Linear coefficient (no linear term)
+    C = amplitude * (1 - (t / (time_duration / 2))**2)  # Varying constant term based on time
+    return A * x**2 + B * x + C
 
 def net_force(x, t):
     # Calculate pressure difference across the cube
     pressure_front = pressure(x + cube_width / 2, t)
-    pressure_back = pressure(x - cube_width / 2, t)  # Phase shift for back wave
+    pressure_back = pressure(x - cube_width / 2, t)
     pressure_diff = pressure_front - pressure_back
 
     # Pressure-based force

@@ -23,7 +23,7 @@ k = 2 * np.pi / wavelength
 # Vectorized functions for pressure and net force
 def pressure(x, t, offset=0):
     # Update to create a standing wave function
-    return amplitude * np.cos(k * x) * np.cos(angular_frequency * t + offset)
+    return 0.15
 
 def net_force(x, t):
     # Calculate pressure difference across the cube
