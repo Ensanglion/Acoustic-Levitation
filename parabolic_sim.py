@@ -12,8 +12,8 @@ cube_area = 0.0001  # m^2
 cube_width = 0.002  # m
 
 # Time setup
-time_duration = 0.001  # one period of the wave
-time_steps = 50000  # increase number of steps for higher resolution
+time_duration = 0.005  # increased time duration for a longer simulation
+time_steps = 100000  # increase number of steps for higher resolution
 time = np.linspace(0, time_duration, time_steps)
 
 # Wave properties
@@ -23,16 +23,16 @@ k = 2 * np.pi / wavelength
 # Vectorized functions for pressure and net force
 def pressure(x, t, offset=0):
     # Update to create a parabolic function for pressure that varies with time
-    A = amplitude / (wavelength / 2)**2  # Coefficient for x^2
-    B = 0  # Linear coefficient (no linear term)
-    C = amplitude * (1 - (t / (time_duration / 2))**2)  # Varying constant term based on time
+    A = -amplitude / (wavelength / 2)**2  # Coefficient for x^2 (negative for downward opening)
+    B = amplitude / (wavelength / 2)  # Linear coefficient to create a slope
+    C = amplitude * (1 - (t / (time_duration / 2))**2) + 1  # Varying constant term based on time
     return A * x**2 + B * x + C
 
 def net_force(x, t):
     # Calculate pressure difference across the cube
     pressure_front = pressure(x + cube_width / 2, t)
     pressure_back = pressure(x - cube_width / 2, t)
-    pressure_diff = pressure_front - pressure_back
+    pressure_diff = pressure_back - pressure_front  # Reverse the difference to reflect correct direction
 
     # Pressure-based force
     pressure_force = pressure_diff * cube_area
@@ -41,8 +41,8 @@ def net_force(x, t):
     return pressure_force
 
 # Re-initialize variables for the new time frame
-x = [0]  # Initial position (m)
-v = 0  # Initial velocity (m/s)
+x = [0]  # Initial position (m) set slightly to the left of the minimum point of the parabolic function
+v = 0.001  # Small initial velocity (m/s) to the right
 dt = time_duration / time_steps
 
 # Initialize variables for tracking min/max values during the loop
